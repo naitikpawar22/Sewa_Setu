@@ -38,8 +38,7 @@ def test_pdf_generation_preserves_indic_script():
     
     pdf_bytes = main_app.generate_acknowledgment(mock_cur, 1)
     assert len(pdf_bytes) > 0, "PDF bytes should not be empty"
-    # PDF should NOT have fallen back to writing '?' for applicant name
-    import re, zlib
-    streams = re.findall(rb'stream[\r\n]+(.*?)[\r\n]+endstream', pdf_bytes, re.DOTALL)
-    decompressed = b"".join(zlib.decompress(s) for s in streams if s)
-    assert b"(?) Tj" not in decompressed, "PDF contains '(?) Tj' fallback cell instead of proper text"
+    import io, pypdf
+    reader = pypdf.PdfReader(io.BytesIO(pdf_bytes))
+    extracted = "".join(p.extract_text() for p in reader.pages)
+    assert "প্ৰণিতা" in extracted, f"Expected Assamese name in PDF, got: {extracted}"
