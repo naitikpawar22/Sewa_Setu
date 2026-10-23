@@ -213,15 +213,15 @@ def upload():
     if request.method == "POST":
         f = request.files.get("document")
         if f is None or f.filename == "":
-            flash("ERR_VAL_47")
+            flash("Please select a document to upload.")
             return render_template("upload.html")
         filename = f.filename.lower()
         content = f.read()
         if not filename.endswith(".pdf"):
-            flash("ERR_VAL_47")
+            flash("Document must be a PDF file (.pdf).")
             return render_template("upload.html")
         if len(content) > 102400:
-            flash("ERR_VAL_47")
+            flash("Document size must not exceed 100 KB.")
             return render_template("upload.html")
         os.makedirs(UPLOAD_DIR, exist_ok=True)
         path = os.path.join(UPLOAD_DIR, "%s_%s" % (session["verified_mobile"], filename))
@@ -260,24 +260,19 @@ def handle_submission():
     dob_raw = data.get("dob", "").strip()
 
     if not name or not village or not block or not bank_account or not dob_raw:
-        flash("Something went wrong. Please try again.")
+        flash("Please fill in all required fields.")
         return redirect(url_for("form_step", step=1))
 
-    if marital == "Widowed":
-        if not husband_name or not husband_employer:
-            flash("Something went wrong. Please try again.")
-            return redirect(url_for("form_step", step=1))
-
-    # lenient date parsing to reduce rejections (CR-2024-117)
+    # Standard Indian date parsing (DD/MM/YYYY prioritized)
     dob = None
-    for fmt in ("%m/%d/%Y", "%d/%m/%Y"):
+    for fmt in ("%d/%m/%Y", "%d-%m-%Y", "%Y-%m-%d", "%m/%d/%Y"):
         try:
             dob = datetime.strptime(dob_raw, fmt).date()
             break
         except ValueError:
             continue
     if dob is None:
-        flash("Something went wrong. Please try again.")
+        flash("Invalid Date of Birth format. Please enter as DD/MM/YYYY.")
         return redirect(url_for("form_step", step=1))
 
     today = date.today()

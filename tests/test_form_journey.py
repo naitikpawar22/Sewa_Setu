@@ -64,7 +64,8 @@ def test_widow_applicant_does_not_require_husband_employer(client):
         mock_cur = MagicMock()
         mock_get_db.return_value = mock_conn
         mock_conn.cursor.return_value = mock_cur
-        mock_cur.fetchone.side_effect = [(0,), (1,), (0,)]
+        mock_row = ("SSP26000001", "Runu Dutta", "9876543210", "1950-01-01", "Milanpur", "Borgaon", "1234567890", "SBIN0001", "2026-01-01", "PENDING")
+        mock_cur.fetchone.side_effect = [(0,), (1,), (0,), mock_row]
 
         with client.session_transaction() as sess:
             sess["verified_mobile"] = "9876543210"
@@ -83,9 +84,9 @@ def test_widow_applicant_does_not_require_husband_employer(client):
             }
 
         response = client.post("/declaration", data={"agree": "1"}, follow_redirects=False)
-        # Should proceed to confirmation, NOT redirect to form_step 1
-        assert response.status_code == 302
-        assert response.headers["Location"].endswith("/confirmation"), f"Expected redirect to confirmation, got {response.headers.get('Location')}"
+        # Should succeed with 200 and render confirmation page, NOT redirect to form_step 1 (302)
+        assert response.status_code == 200
+        assert b"Application Submitted" in response.data
 
 def test_upload_errors_are_user_friendly(client):
     """
