@@ -546,12 +546,12 @@ def admin_view(app_id):
 
 @app.route("/admin/approve/<int:app_id>", methods=["POST"])
 def admin_approve(app_id):
-    if not session.get("logged_in"):
+    if not session.get("admin"):
         abort(403)
     conn = get_db()
     cur = conn.cursor()
-    cur.execute("UPDATE applications SET status = 'APPROVED', decided_at = %s "
-                "WHERE id = %s", (datetime.now(), app_id))
+    cur.execute("UPDATE applications SET status = 'APPROVED', decided_at = %s, decided_by = %s "
+                "WHERE id = %s", (datetime.now(), session.get("user", "admin"), app_id))
     conn.commit()
     cur.close(); conn.close()
     flash("Application approved.")
@@ -560,12 +560,12 @@ def admin_approve(app_id):
 
 @app.route("/admin/reject/<int:app_id>", methods=["POST"])
 def admin_reject(app_id):
-    if not session.get("logged_in"):
+    if not session.get("admin"):
         abort(403)
     conn = get_db()
     cur = conn.cursor()
-    cur.execute("UPDATE applications SET status = 'REJECTED', decided_at = %s "
-                "WHERE id = %s", (datetime.now(), app_id))
+    cur.execute("UPDATE applications SET status = 'REJECTED', decided_at = %s, decided_by = %s "
+                "WHERE id = %s", (datetime.now(), session.get("user", "admin"), app_id))
     conn.commit()
     cur.close(); conn.close()
     flash("Application rejected.")
