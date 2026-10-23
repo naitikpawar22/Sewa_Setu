@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:15
+    restart: unless-stopped
     environment:
       POSTGRES_DB: sewasetu
       POSTGRES_USER: sewasetu
@@ -12,6 +13,7 @@ services:
 
   app:
     build: ./app
+    restart: unless-stopped
     ports:
       - "8000:8000"
     depends_on:
@@ -23,6 +25,7 @@ services:
 
   scheduler:
     build: ./app
+    restart: unless-stopped
     command: ["cron", "-f"]
     depends_on:
       - db
@@ -31,6 +34,7 @@ services:
 
   smsgw:
     build: ./smsgw
+    restart: unless-stopped
     # internal only — reached by the app over the docker network and exposed to
     # users via the app at /__gateway/ (so no second host port is needed)
     expose:
