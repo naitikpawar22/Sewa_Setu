@@ -1,0 +1,123 @@
+================================================================================
+          COMPLETE 3-MINUTE LOOM VIDEO SPEECH (CODE WALKTHROUGH)
+               Target Time: 2 Minutes 40 Seconds (Strict 3:00 Max)
+================================================================================
+
+[0:00 - 0:25] INTRO & EVIDENCE
+--------------------------------------------------------------------------------
+👉 LOOK AT YOUR WEBCAM IN THE CORNER:
+
+"Namaste Sir. 
+
+I am your Digital Fellow from the Build for Bharat Fellowship. 
+
+Over the past week, I analyzed our Sewa Setu portal, the 100,000 citizen 
+database, and six months of production server logs. 
+
+Every single complaint from your briefing was confirmed in the code. 
+I have fixed the top 5 critical issues, ranked strictly by citizen impact, 
+and every fix is backed by automated tests. Let me show you the code."
+
+
+
+[0:25 - 0:55] FIX 1: DEEMED APPROVAL CRON JOB (RANK 1)
+--------------------------------------------------------------------------------
+👉 CLICK TAB: app/scripts/deemed_approval.py
+👉 HIGHLIGHT: Line 23
+
+"Rank 1 is restoring the statutory RTPS Deemed Approval job. 
+
+By law, any pension application untouched after 15 days must automatically 
+be approved so our elders get their livelihood. 
+
+If you look here on Line 23 of deemed_approval.py, the vendor made a fatal error: 
+it looked for 'settings.ini', which did not exist. Because of that, the job 
+crashed every single night since March, leaving thousands of elders in limbo. 
+
+I changed it to 'app.ini'. Now, every midnight, overdue files are automatically 
+approved and SMS alerts are sent to citizens."
+
+
+
+[0:55 - 1:20] FIX 2: STOPPING DATA LEAK & IDOR (RANK 2)
+--------------------------------------------------------------------------------
+👉 CLICK TAB: app/app.py
+👉 SCROLL TO: Line 425 & Line 443
+
+"Rank 2 is stopping the massive data leak that brought salespeople to citizens' doors. 
+
+Previously, anyone on the internet could change the ID number in their browser 
+and scrape other citizens' bank account numbers, phone numbers, and home addresses. 
+
+Here on Line 425 in view_application, and Line 443 in ack_pdf, I added strict 
+session ownership checks. Now, unless you are an admin, you can only view your 
+own application. Strangers and scrapers are blocked with a 403 Forbidden."
+
+
+
+[1:20 - 1:45] FIX 3: ASSAMESE NAMES & PDF QUESTION MARKS (RANK 3)
+--------------------------------------------------------------------------------
+👉 STAY ON: app/app.py
+👉 SCROLL TO: Line 74 (sanitize) and Line 344 (font loading)
+
+"Rank 3 is fixing Assamese and Indic names. 
+
+The elder who walked two hours because his slip printed question marks was 
+a victim of raw byte slicing on Line 74, which cut 3-byte Indian characters in half. 
+Also, the PDF generator had no Indian language fonts. 
+
+On Line 74, I fixed the text slicing so full Unicode characters are preserved. 
+And on Line 344, I added Noto Sans Bengali TrueType fonts so Assamese names print 
+clearly and legally for bank verification."
+
+
+
+[1:45 - 2:05] FIX 4: REMOVING WIDOW TRAP & FORM REJECTIONS (RANK 4)
+--------------------------------------------------------------------------------
+👉 STAY ON: app/app.py
+👉 SCROLL TO: Line 268 (date parser) and Line 221 (upload errors)
+
+"Rank 4 is removing unfair form rejections that forced elders to pay bazaar touts. 
+
+Our portal secretly required widows to provide their deceased husband's employer—
+which village widows simply do not have. It also rejected Indian birth dates by 
+expecting American month-first format. 
+
+I removed the widow employer requirement, set Indian Day-Month-Year date parsing 
+here on Line 268, and on Line 221 added clear, human-readable error messages."
+
+
+
+[2:05 - 2:25] FIX 5: ADMIN SECURITY & FIXING SERVER SLOWDOWN (RANK 5)
+--------------------------------------------------------------------------------
+👉 STAY ON: app/app.py
+👉 SCROLL TO: Line 549 (admin_approve) and Line 358 (clean PDF borders)
+
+"Rank 5 is securing admin approvals and fixing server slowdowns. 
+
+On Line 549, the approve route only checked if a user was logged in, meaning any 
+citizen could approve their own pension. I enforced strict admin role checks. 
+
+Here on Line 358, I also removed a heavy 2,000-line decorative border loop in 
+the PDF code that was burning CPU and crashing the server during month-end traffic."
+
+
+
+[2:25 - 2:45] WHAT I CHOSE NOT TO DO & TEST PROOF
+--------------------------------------------------------------------------------
+👉 CLICK TERMINAL at the bottom of VS Code
+👉 PRESS ENTER ON: .venv\Scripts\python -m pytest -v
+👉 SHOW THE 11 GREEN "PASSED" LINES
+
+"Finally, what I deliberately chose NOT to do: 
+The helpdesk asked for an edit button for submitted forms. I chose not to build 
+this. A pension application is a sworn legal document under the RTPS Act. Allowing 
+post-submission edits invites fraud. Re-application after rejection is the proper legal path. 
+
+As you can see on screen, all 11 unit tests pass in green. The portal is secure, 
+resilient, and running on our live server. 
+
+Thank you, Sir."
+
+[STOP RECORDING at ~2:45]
+================================================================================
