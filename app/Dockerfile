@@ -5,7 +5,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends cron \
 
 WORKDIR /app
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY wheels* /app/wheels/
+RUN pip install --no-cache-dir --no-index --find-links=/app/wheels -r requirements.txt
 
 COPY . .
 
